@@ -49,6 +49,36 @@ jobs:
           </paths>
           EOF
 
+      - name: Add missing icon and theme resources
+        run: |
+          mkdir -p android/app/src/main/res/mipmap-mdpi
+          mkdir -p android/app/src/main/res/mipmap-hdpi
+          mkdir -p android/app/src/main/res/mipmap-xhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxhdpi
+          mkdir -p android/app/src/main/res/values
+          convert -size 48x48 xc:"#4CAF50" android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert -size 48x48 xc:"#4CAF50" android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          convert -size 72x72 xc:"#4CAF50" android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert -size 72x72 xc:"#4CAF50" android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          convert -size 96x96 xc:"#4CAF50" android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert -size 96x96 xc:"#4CAF50" android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          convert -size 144x144 xc:"#4CAF50" android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert -size 144x144 xc:"#4CAF50" android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          cat > android/app/src/main/res/values/styles.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+              </style>
+          </resources>
+          EOF
+
+      - name: Set compileSdk to 35
+        run: |
+          if [ -f android/variables.gradle ]; then
+            sed -i 's/compileSdkVersion = [0-9]*/compileSdkVersion = 35/' android/variables.gradle
+            sed -i 's/targetSdkVersion = [0-9]*/targetSdkVersion = 35/' android/variables.gradle
+          fi
+
       - name: Fix Gradle Wrapper
         run: |
           cd android
