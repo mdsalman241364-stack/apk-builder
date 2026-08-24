@@ -40,6 +40,10 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Fix known code issues
+        run: |
+          find android/app/src -name "*.java" -exec sed -i 's/Log\.warn(/Log.w(/g' {} \;
+
       - name: Add missing file_paths resource
         run: |
           mkdir -p android/app/src/main/res/xml
