@@ -37,6 +37,18 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Add missing file_paths resource
+        run: |
+          mkdir -p android/app/src/main/res/xml
+          cat > android/app/src/main/res/xml/file_paths.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <paths xmlns:android="http://schemas.android.com/apk/res/android">
+              <external-path name="my_images" path="Pictures" />
+              <cache-path name="my_cache" path="." />
+              <files-path name="my_files" path="." />
+          </paths>
+          EOF
+
       - name: Fix Gradle Wrapper
         run: |
           cd android
