@@ -1,0 +1,60 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath 'com.google.gms:google-services:4.4.0'
+    }
+    configurations.all {
+        resolutionStrategy {
+            dependencySubstitution {
+                substitute module('org.bouncycastle:bcprov-jdk15on') using module('org.bouncycastle:bcprov-jdk18on:1.78.1')
+                substitute module('org.bouncycastle:bcpkix-jdk15on') using module('org.bouncycastle:bcpkix-jdk18on:1.78.1')
+                substitute module('org.bouncycastle:bcutil-jdk15on') using module('org.bouncycastle:bcutil-jdk18on:1.78.1')
+                substitute module('org.bouncycastle:bcprov-jdk15to18') using module('org.bouncycastle:bcprov-jdk18on:1.78.1')
+                substitute module('org.bouncycastle:bcpkix-jdk15to18') using module('org.bouncycastle:bcpkix-jdk18on:1.78.1')
+            }
+            eachDependency { details ->
+                if (details.requested.group == 'org.bouncycastle' && details.requested.name.endsWith('-jdk18on')) {
+                    details.useVersion '1.78.1'
+                }
+            }
+        }
+    }
+}
+
+apply from: "variables.gradle"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    configurations.all {
+        resolutionStrategy {
+            dependencySubstitution {
+                substitute module('org.bouncycastle:bcprov-jdk15on') using module('org.bouncycastle:bcprov-jdk18on:1.78.1')
+                substitute module('org.bouncycastle:bcpkix-jdk15on') using module('org.bouncycastle:bcpkix-jdk18on:1.78.1')
+                substitute module('org.bouncycastle:bcutil-jdk15on') using module('org.bouncycastle:bcutil-jdk18on:1.78.1')
+                substitute module('org.bouncycastle:bcprov-jdk15to18') using module('org.bouncycastle:bcprov-jdk18on:1.78.1')
+                substitute module('org.bouncycastle:bcpkix-jdk15to18') using module('org.bouncycastle:bcpkix-jdk18on:1.78.1')
+            }
+            eachDependency { details ->
+                if (details.requested.group == 'org.bouncycastle' && details.requested.name.endsWith('-jdk18on')) {
+                    details.useVersion '1.78.1'
+                }
+            }
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+

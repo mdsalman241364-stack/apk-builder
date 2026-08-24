@@ -1,0 +1,6 @@
+{
+  "name": "DIGUU AI - Hyper Intelligent Voice Bestie & Smart Assistant",
+  "description": "DIGUU AI: Hyper-intelligent companion with voice interaction, personal memory bank, proactive morning/evening briefings, productivity suite, entertainment, health reminders, avatar customization, and AI creativity tools.",
+  "requestFramePermissions": ["microphone", "geolocation", "camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
