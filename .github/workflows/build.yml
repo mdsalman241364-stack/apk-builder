@@ -25,8 +25,10 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install ImageMagick
-        run: sudo apt-get update && sudo apt-get install -y imagemagick
+      - name: Install ImageMagick and Python deps
+        run: |
+          sudo apt-get update && sudo apt-get install -y imagemagick
+          pip install requests
 
       - name: Install dependencies
         run: npm install
@@ -64,9 +66,6 @@ jobs:
               content += fix
               with open(path, "w") as f:
                   f.write(content)
-              print("Applied Kotlin resolutionStrategy fix")
-          else:
-              print("resolutionStrategy already present, skipping")
           PYEOF
 
       - name: Add missing file_paths resource
@@ -118,11 +117,36 @@ jobs:
           unzip -q gradle-8.7-bin.zip
           ./gradle-8.7/bin/gradle wrapper --gradle-version 8.7
 
-      - name: Build APK
+      - name: Build APK with AI auto-fix retry
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
+          MAX_TRIES=3
+          TRY=1
+          while [ $TRY -le $MAX_TRIES ]; do
+            echo ">> Build attempt $TRY of $MAX_TRIES"
+            if ./gradlew assembleDebug --stacktrace 2>&1 | tee /tmp/build_log.txt; then
+              echo ">> Build succeeded on attempt $TRY"
+              exit 0
+            fi
+            echo ">> Build failed on attempt $TRY"
+            if [ $TRY -eq $MAX_TRIES ]; then
+              echo ">> Max retries reached, giving up"
+              exit 1
+            fi
+            echo ">> Asking Gemini to fix the error..."
+            cd ..
+            if python3 .github/scripts/ai_fix.py /tmp/build_log.txt "$(pwd)/android"; then
+              echo ">> AI fix applied, retrying build"
+            else
+              echo ">> AI could not fix the error, giving up"
+              exit 1
+            fi
+            cd android
+            TRY=$((TRY + 1))
+          done
 
       - name: Verify APK exists
         run: |
@@ -131,7 +155,6 @@ jobs:
             exit 1
           fi
           echo "APK build successful!"
-          ls -la android/app/build/outputs/apk/debug/
 
       - name: Upload APK
         if: success()
