@@ -37,6 +37,13 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Fix Gradle Wrapper
+        run: |
+          cd android
+          curl -o gradle-8.7-bin.zip https://services.gradle.org/distributions/gradle-8.7-bin.zip -L
+          unzip -q gradle-8.7-bin.zip
+          ./gradle-8.7/bin/gradle wrapper --gradle-version 8.7
+
       - name: Build APK
         run: |
           cd android
